@@ -2,7 +2,7 @@
 #include "mbed.h"
 #include "arm_book_lib.h"
 
-//=====[Defines]===============================================================
+//=====[Defines]============================================
 #define SEG_A D7
 #define SEG_B D8
 #define SEG_C D2
@@ -97,15 +97,15 @@ int main() {
 
         if (dateReceived) {
             showDigit(counter);
-            updateLEDs(counter);
-            sendCount(counter);
-
-            while (true) {
-                handleButtonPress();
-            }
+            updateLEDs(counter);   
         }
+
+        handleButtonPress();
     }
 }
+
+
+//=====[Implementations of public functions]===================================
 
 // Función para inicializar el sistema
 void initializeSystem() {
@@ -118,23 +118,35 @@ void initializeSystem() {
 
 // Función para solicitar la fecha al usuario
 void requestDate() {
-    uartUsb.write("Por favor, ingrese la fecha en formato dd/mm/aaaa:\r\n\r\n", 51); // Mensaje con doble salto de línea
+    uartUsb.write("Por favor, ingrese la fecha en formato dd/mm/aaaa:\r\n\r\n", 51); 
     dateRequested = true;
 }
-
-//=====[Implementations of public functions]===================================
-
-// Función para leer la fecha ingresada por el usuario
+ // Función para leer la fecha ingresada por el usuario
 void readDate() {
-    for (int i = 0; i < DATE_LENGTH; i++) {
-        char c;
-        while (!uartUsb.readable()) {}  // Esperar hasta que haya datos disponibles para leer
+    static int index = 0;
+    char c;
+    if (uartUsb.readable()) {
         uartUsb.read(&c, 1);  // Leer un carácter por comunicación serial
-        date[i] = c;  // Almacenar el carácter en el array de fecha
+        date[index++] = c;  
+        if (index >= DATE_LENGTH) {
+            date[DATE_LENGTH] = '\0';  // Agregar terminación nula para formar una cadena de caracteres
+            dateReceived = true;  
+            uartUsb.write("\r\nIngreso exitoso.\r\n\r\n", 21); // Enviar mensaje de ingreso exitoso
+            index = 0;  
+        }
     }
-    date[DATE_LENGTH] = '\0';  // Agregar terminación nula para formar una cadena de caracteres
-    dateReceived = true;  // Marcar que se recibió la fecha
-    uartUsb.write("\r\nIngreso exitoso.\r\n\r\n", 21); // Enviar mensaje de ingreso exitoso
+}
+
+// Función para manejar el debounce del botón
+bool isButtonPressed(DigitalIn &button) {
+    if (button.read() == 1) { // Si el botón está presionado
+        delay(DEBOUNCE_TIME); // Esperar 20ms para el debounce
+        if (button.read() == 1) { // Verificar nuevamente el estado del botón
+            while (button.read() == 1) {} // Esperar a que se suelte el botón
+            return true;
+        }
+    }
+    return false;
 }
 
 // Función para manejar la lógica de los botones
@@ -146,7 +158,6 @@ void handleButtonPress() {
             updateLEDs(counter);
             sendCount(counter);
         }
-        while (buttonUp.read() == 1) {} // Esperar a que se suelte el botón
     }
 
     if (isButtonPressed(buttonDown)) {
@@ -156,7 +167,6 @@ void handleButtonPress() {
             updateLEDs(counter);
             sendCount(counter);
         }
-        while (buttonDown.read() == 1) {} // Esperar a que se suelte el botón
     }
 }
 
@@ -165,17 +175,6 @@ void showDigit(int digit) {
     for (int i = 0; i < 7; i++) {
         segments[i] = digitPatterns[digit][i];
     }
-}
-
-// Función para manejar el debounce del botón
-bool isButtonPressed(DigitalIn &button) {
-    if (button.read() == 1) { // Si el botón está presionado
-        delay(DEBOUNCE_TIME); // Esperar 20ms
-        if (button.read() == 1) { // Verificar nuevamente el estado del botón
-            return true;
-        }
-    }
-    return false;
 }
 
 // Función para actualizar los LEDs externos
