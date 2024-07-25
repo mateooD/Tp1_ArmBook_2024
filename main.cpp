@@ -188,18 +188,10 @@ void updateLEDs(int counter) {
     }
 }
 
-// Función para enviar el conteo por comunicación serial
+// Función para enviar el conteo por comunicación serial (Upon successful return, these functions return the number of characters
+//printed (excluding the null byte used to end output to strings).
 void sendCount(int count) {
     char buffer[30];
-    sprintf(buffer, "Lugares disponibles: %d\n", count);
-    uartUsb.write(buffer, getStringLength(buffer));
-}
-
-// Función para calcular la longitud de una cadena
-size_t getStringLength(const char* str) {
-    size_t length = 0;
-    while (str[length] != '\0') {
-        length++;
-    }
-    return length;
+    int length = sprintf(buffer, "Lugares disponibles: %d\n", count);
+    uartUsb.write(buffer, length);
 }
