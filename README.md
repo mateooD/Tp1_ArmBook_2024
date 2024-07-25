@@ -34,8 +34,8 @@ Podemos plantear un diagrama como el siguiente:
 
 ### Funcionamiento
 
-En primer lugar se pretende que el sistema arranque apagado, y en el monitor serial se cargue la fecha de trabajo. Una vez hecho eso, el sistema partirá en este caso con todos los lugares disponibles.Se simulara enotnces la salida y entrada de vehiculos con botones,y se mostrará en el display los lugares disponibles.En caso de que no exista mas lugar disponible, se encendera luz roja, de lo contrario una luz verde estará encendida.
-La alimentacion de todo el sistema en este caso se utilizaron las salidas de 3,3v y GND de la placa.
+En primer lugar se pretende que el sistema arranque apagado, y en el monitor serial se cargue la fecha de trabajo. Una vez hecho eso, el sistema partirá en este caso con todos los lugares disponibles. Se simulara enotnces la salida y entrada de vehiculos con botones,y se mostrará en el display los lugares disponibles. En caso de que no exista mas lugar disponible, se encendera luz roja, de lo contrario una luz verde estará encendida.
+La alimentacion de todo el sistema en este caso se utilizaron las salidas de 3,3 V y GND de la placa.
 Para que se puedan visualizar los valores en pantalla por comunicacion serial, se debió incluir el archivo mbed_app.json para que la combinación %2.f sea correctamente interpretada en el compilador.
 
 ### Asignacion Pines
@@ -108,4 +108,3 @@ Esta en desarrollo la documentacion con ***Doxygen***.
 
 :construction: En proceso :construction:
 
-**solicitud revision**
